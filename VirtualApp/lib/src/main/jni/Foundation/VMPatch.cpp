@@ -3,6 +3,7 @@
 //
 #include <Jni/VAJni.h>
 #include <Substrate/CydiaSubstrate.h>
+#include <HookZz/include/hookzz.h>
 #include "VMPatch.h"
 #include "fake_dlfcn.h"
 
@@ -455,7 +456,7 @@ void disableJit(int apiLevel) {
         processProfilingInfo = fake_dlsym(libart, processProfileInfoFunc);
         ALOGE("processProfileingInfo: %p", processProfilingInfo);
         if (processProfilingInfo) {
-            MSHookFunction(processProfilingInfo, (void*)processNothing, (void**)&orig_ProcessProfilingInfo);
+            ZzReplace(processProfilingInfo, (void*)processNothing, (void**)&orig_ProcessProfilingInfo);
         }
 
         // disable jit
@@ -464,7 +465,7 @@ void disableJit(int apiLevel) {
                                    "_ZN3art3jit3Jit13CompileMethodEPNS_9ArtMethodEPNS_6ThreadEb");
         ALOGE("compileMethod: %p", compileMethod);
         if (compileMethod) {
-            MSHookFunction(compileMethod, (void*) compileNothing, (void**) &orig_CompileNothing);
+            ZzReplace(compileMethod, (void*) compileNothing, (void**) &orig_CompileNothing);
         }
     }
 #endif

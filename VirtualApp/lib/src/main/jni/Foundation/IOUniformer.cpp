@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <fb/include/fb/ALog.h>
 #include <Substrate/CydiaSubstrate.h>
-
+#include <syscall.h>
+#include <HookZz/include/hookzz.h>
 #include "IOUniformer.h"
 #include "SandboxFs.h"
 #include "Path.h"
@@ -71,7 +72,7 @@ hook_function(void *handle, const char *symbol, void *new_func, void **old_func)
     if (addr == NULL) {
         return;
     }
-    MSHookFunction(addr, new_func, old_func);
+    ZzReplace(addr, new_func, old_func);
 }
 
 
@@ -693,25 +694,25 @@ void hook_dlopen(int api_level) {
     if (api_level > 25) {
         if (findSymbol("__dl__Z9do_dlopenPKciPK17android_dlextinfoPKv", "linker",
                        (unsigned long *) &symbol) == 0) {
-            MSHookFunction(symbol, (void *) new_do_dlopen_V24,
+            ZzReplace(symbol, (void *) new_do_dlopen_V24,
                            (void **) &orig_do_dlopen_V24);
         }
     } else if (api_level > 23) {
         if (findSymbol("__dl__Z9do_dlopenPKciPK17android_dlextinfoPv", "linker",
                        (unsigned long *) &symbol) == 0) {
-            MSHookFunction(symbol, (void *) new_do_dlopen_V24,
+            ZzReplace(symbol, (void *) new_do_dlopen_V24,
                           (void **) &orig_do_dlopen_V24);
         }
     } else if (api_level >= 19) {
         if (findSymbol("__dl__Z9do_dlopenPKciPK17android_dlextinfo", "linker",
                        (unsigned long *) &symbol) == 0) {
-            MSHookFunction(symbol, (void *) new_do_dlopen_V19,
+            ZzReplace(symbol, (void *) new_do_dlopen_V19,
                           (void **) &orig_do_dlopen_V19);
         }
     } else {
         if (findSymbol("__dl_dlopen", "linker",
                        (unsigned long *) &symbol) == 0) {
-            MSHookFunction(symbol, (void *) new_dlopen, (void **) &orig_dlopen);
+            ZzReplace(symbol, (void *) new_dlopen, (void **) &orig_dlopen);
         }
     }
 }

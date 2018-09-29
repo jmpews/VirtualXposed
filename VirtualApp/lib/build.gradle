@@ -17,9 +17,9 @@ android {
         versionCode 1
         versionName "1.0"
         externalNativeBuild {
-            ndkBuild {
-                abiFilters "armeabi-v7a", "x86"
-            }
+        }
+        ndk {
+            abiFilters "armeabi-v7a"
         }
     }
     buildTypes {
@@ -29,8 +29,11 @@ android {
         }
     }
     externalNativeBuild {
-        ndkBuild {
-            path file("src/main/jni/Android.mk")
+//        ndkBuild {
+//            path file("src/main/jni/Android.mk")
+//        }
+        cmake {
+            path "src/main/jni/CMakeLists.txt"
         }
     }
     lintOptions {
